@@ -7,6 +7,11 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   modules: ["@pinia/nuxt"],
   ssr: true,
+  runtimeConfig: {
+    public: {
+      appBaseURL: process.env.NUXT_APP_BASE_URL || '/audiophile-ecommerce/'
+    }
+  },
   nitro: {
     preset: "github-pages",
     prerender: {
@@ -18,11 +23,14 @@ export default defineNuxtConfig({
         ...getProductRoutes()
       ],
       crawlLinks: true
-    }
+    },
+    // `output.publicDir` should remain REMOVED/COMMENTED OUT here
   },
   app: {
-    baseURL: "/audiophile-ecommerce/",
-    buildAssetsDir: "/_nuxt/",
+    baseURL: "/audiophile-ecommerce/", // This remains your application's base path
+    // ---- CRUCIAL CHANGE HERE ----
+    buildAssetsDir: "_nuxt/", // No leading slash! This makes it relative to baseURL.
+    // ---- END CRUCIAL CHANGE ----
     head: {
       title: "Audiophile - Premium Audio Equipment",
       meta: [

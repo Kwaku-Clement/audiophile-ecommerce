@@ -176,55 +176,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import ProductShowcase from '~/components/ProductShowcase.vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
-import { useHead } from '#app'
+import { useHead, useRoute, useFetch } from '#app'
 import { useResponsiveImage } from '~/composables/useResponsiveImage'
 
 const { getResponsiveImage } = useResponsiveImage()
+const { public: { appBaseURL } } = useRuntimeConfig()
+const route = useRoute()
 
-const loading = ref(true)
-const error = ref(null)
-const products = ref([])
-const allProducts = ref([])
+// Use useFetch to get all products for SSR
+const { data: allProducts, pending, error } = await useFetch(`${appBaseURL}products.json`, {
+  transform: (data) => data,
+  server: true
+})
 
+// Filter products based on category, ensuring allProducts.value is accessible
+const products = computed(() => {
+  return allProducts.value?.filter(product => product.category === 'headphones') || []
+})
+
+// Category images for 'shop' links (these also rely on allProducts.value)
 const speakersCategoryImage = computed(() => {
-  const speaker = allProducts.value.find(p => p.category === 'speakers')
+  const speaker = allProducts.value?.find(p => p.category === 'speakers')
   return speaker ? speaker.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
 const headphonesCategoryImage = computed(() => {
-  const headphone = allProducts.value.find(p => p.category === 'headphones')
+  const headphone = allProducts.value?.find(p => p.category === 'headphones')
   return headphone ? headphone.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
 const earphonesCategoryImage = computed(() => {
-  const earphone = allProducts.value.find(p => p.category === 'earphones')
+  const earphone = allProducts.value?.find(p => p.category === 'earphones')
   return earphone ? earphone.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
 useHead({
-  title: 'Headphones - Audiophile',
+  title: 'Earphones - Audiophile',
   meta: [
-    { name: 'description', content: 'Discover our premium collection of headphones designed for the ultimate audio experience.' }
+    { name: 'description', content: 'Discover our collection of premium earphones for portable audio excellence.' }
   ]
-})
-
-onMounted(async () => {
-  try {
-    const response = await fetch('/products.json')
-    if (!response.ok) {
-      throw new Error('Failed to fetch products')
-    }
-    const data = await response.json()
-    allProducts.value = data
-    products.value = data.filter(product => product.category === 'headphones')
-  } catch (err) {
-    error.value = 'Failed to load products'
-    console.error('Error loading products:', err)
-  } finally {
-    loading.value = false
-  }
 })
 </script>

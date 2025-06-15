@@ -213,12 +213,13 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useHead } from '#app'
+import { useHead, useRuntimeConfig } from '#app'
 import { useResponsiveImage } from '~/composables/useResponsiveImage'
 import ProductCard from '~/components/ProductCard.vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 
 const { getResponsiveImage } = useResponsiveImage()
+const { public: { appBaseURL } } = useRuntimeConfig()
 
 const loading = ref(true)
 const error = ref(null)
@@ -244,7 +245,7 @@ const earphonesCategoryImage = computed(() => {
 
 onMounted(async () => {
   try {
-    const response = await fetch('/products.json')
+    const response = await fetch(`${appBaseURL}products.json`)
     if (!response.ok) {
       throw new Error('Failed to fetch products')
     }

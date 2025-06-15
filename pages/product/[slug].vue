@@ -278,19 +278,20 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from '#app'
+import { useRoute, useRuntimeConfig } from '#app'
 import { useCartStore } from '~/stores/cart'
 import { useHead } from '#app'
 import { useResponsiveImage } from '~/composables/useResponsiveImage'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 
+const { public: { appBaseURL } } = useRuntimeConfig()
 const { getResponsiveImage } = useResponsiveImage()
 const route = useRoute()
 const cartStore = useCartStore()
 
 const quantity = ref(1)
 
-const { data: products, pending: loading, error } = await useLazyFetch('/products.json', {
+const { data: products, pending: loading, error } = await useLazyFetch(`${appBaseURL}products.json`, {
   key: 'products',
   transform: (data) => data,
   server: true

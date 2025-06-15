@@ -22,12 +22,19 @@
     },
     "types": ["node"]
   },
-  "include": ["**/*.ts", "**/*.vue", "**/*.js", "**/*.jsx", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.vue",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.tsx",
+    "./.nuxt/nuxt.d.ts",
+    "./.nuxt/components.d.ts",
+    "./.nuxt/imports.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist",
-    ".output",
-    ".nuxt",
-    "**/node_modules/@pinia/nuxt/dist/runtime/plugin.vue2.d.ts"
+    ".output"
   ]
 }
