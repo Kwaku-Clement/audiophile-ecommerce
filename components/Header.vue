@@ -5,31 +5,74 @@
         <!-- Mobile menu button -->
         <button
           @click="toggleMobileMenu"
-          class="md:hidden"
+          class="md:hidden z-50"
           aria-label="Toggle menu"
+          :class="{ 'text-orange-500': showMobileMenu }"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            <path
+              v-if="!showMobileMenu"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+            <path
+              v-else
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
           </svg>
         </button>
 
         <!-- Logo -->
-        <NuxtLink to="/" class="text-2xl font-bold">
+        <NuxtLink
+          to="/"
+          class="text-2xl font-bold hover:text-orange-500 transition-colors"
+          @click="closeMobileMenu"
+        >
           audiophile
         </NuxtLink>
 
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex space-x-8">
-          <NuxtLink to="/" class="hover:text-orange-500 transition-colors">HOME</NuxtLink>
-          <NuxtLink to="/headphones" class="hover:text-orange-500 transition-colors">HEADPHONES</NuxtLink>
-          <NuxtLink to="/speakers" class="hover:text-orange-500 transition-colors">SPEAKERS</NuxtLink>
-          <NuxtLink to="/earphones" class="hover:text-orange-500 transition-colors">EARPHONES</NuxtLink>
+          <NuxtLink
+            to="/"
+            class="hover:text-orange-500 transition-colors font-medium"
+            active-class="text-orange-500"
+            exact-active-class="text-orange-500"
+          >
+            HOME
+          </NuxtLink>
+          <NuxtLink
+            to="/headphones"
+            class="hover:text-orange-500 transition-colors font-medium"
+            active-class="text-orange-500"
+          >
+            HEADPHONES
+          </NuxtLink>
+          <NuxtLink
+            to="/speakers"
+            class="hover:text-orange-500 transition-colors font-medium"
+            active-class="text-orange-500"
+          >
+            SPEAKERS
+          </NuxtLink>
+          <NuxtLink
+            to="/earphones"
+            class="hover:text-orange-500 transition-colors font-medium"
+            active-class="text-orange-500"
+          >
+            EARPHONES
+          </NuxtLink>
         </nav>
 
         <!-- Cart -->
         <button
-          @click="$emit('toggle-cart')"
-          class="relative hover:text-orange-500 transition-colors"
+          @click="cartStore.toggleCart()"
+          class="relative hover:text-orange-500 transition-colors z-50"
           aria-label="Shopping cart"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +80,7 @@
           </svg>
           <span
             v-if="cartCount > 0"
-            class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+            class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
           >
             {{ cartCount }}
           </span>
@@ -45,23 +88,67 @@
       </nav>
 
       <!-- Mobile Navigation -->
-      <nav
-        v-if="showMobileMenu"
-        class="md:hidden pb-6 border-t border-gray-800 pt-6"
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 max-h-0"
+        enter-to-class="opacity-100 max-h-96"
+        leave-active-class="transition-all duration-300 ease-in"
+        leave-from-class="opacity-100 max-h-96"
+        leave-to-class="opacity-0 max-h-0"
       >
-        <div class="flex flex-col space-y-4">
-          <NuxtLink to="/" class="hover:text-orange-500 transition-colors" @click="closeMobileMenu">HOME</NuxtLink>
-          <NuxtLink to="/headphones" class="hover:text-orange-500 transition-colors" @click="closeMobileMenu">HEADPHONES</NuxtLink>
-          <NuxtLink to="/speakers" class="hover:text-orange-500 transition-colors" @click="closeMobileMenu">SPEAKERS</NuxtLink>
-          <NuxtLink to="/earphones" class="hover:text-orange-500 transition-colors" @click="closeMobileMenu">EARPHONES</NuxtLink>
-        </div>
-      </nav>
+        <nav
+          v-if="showMobileMenu"
+          class="md:hidden pb-6 border-t border-gray-800 pt-6 overflow-hidden"
+          :key="`mobile-menu-${showMobileMenu}`"
+        >
+          <div class="flex flex-col space-y-4">
+            <NuxtLink
+              to="/"
+              class="hover:text-orange-500 transition-colors font-medium text-lg"
+              active-class="text-orange-500"
+              exact-active-class="text-orange-500"
+              @click="closeMobileMenu"
+            >
+              HOME
+            </NuxtLink>
+            <NuxtLink
+              to="/headphones"
+              class="hover:text-orange-500 transition-colors font-medium text-lg"
+              active-class="text-orange-500"
+              @click="closeMobileMenu"
+            >
+              HEADPHONES
+            </NuxtLink>
+            <NuxtLink
+              to="/speakers"
+              class="hover:text-orange-500 transition-colors font-medium text-lg"
+              active-class="text-orange-500"
+              @click="closeMobileMenu"
+            >
+              SPEAKERS
+            </NuxtLink>
+            <NuxtLink
+              to="/earphones"
+              class="hover:text-orange-500 transition-colors font-medium text-lg"
+              active-class="text-orange-500"
+              @click="closeMobileMenu"
+            >
+              EARPHONES
+            </NuxtLink>
+          </div>
+        </nav>
+      </Transition>
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useCartStore } from '~/stores/cart'
+
+const route = useRoute()
+const cartStore = useCartStore()
 
 defineProps({
   cartCount: {
@@ -69,8 +156,6 @@ defineProps({
     default: 0
   }
 })
-
-defineEmits(['toggle-cart'])
 
 const showMobileMenu = ref(false)
 
@@ -81,4 +166,26 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   showMobileMenu.value = false
 }
+
+watch(() => route.path, () => {
+  closeMobileMenu()
+})
+
+const handleClickOutside = (event) => {
+  if (showMobileMenu.value && !event.target.closest('header')) {
+    closeMobileMenu()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+onMounted(() => {
+  showMobileMenu.value = false
+})
 </script>

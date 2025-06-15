@@ -22,8 +22,7 @@ export interface ResponsiveImage {
         }
       }
 
-      return "/placeholder.svg?height=400&width=400&text=Product+Image"
-    }
+      return "/assets/product-yx1-earphones/mobile/image-product.jpg";    }
 
     const getImageSrcSet = (imageObj: ImageInput): string => {
       if (typeof imageObj === "string") {
@@ -41,8 +40,7 @@ export interface ResponsiveImage {
         }
       }
 
-      return "/placeholder.svg?height=400&width=400&text=Product+Image"
-    }
+      return "/assets/product-yx1-earphones/mobile/image-product.jpg";    }
 
     const getImageSizes = (): string => {
       return "(max-width: 480px) 480px, (max-width: 768px) 768px, 1200px"

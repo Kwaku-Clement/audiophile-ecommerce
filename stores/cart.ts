@@ -11,11 +11,13 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[]
+  showCart: boolean
 }
 
 export const useCartStore = defineStore("cart", {
   state: (): CartState => ({
     items: [],
+    showCart: false,
   }),
 
   getters: {
@@ -60,13 +62,18 @@ export const useCartStore = defineStore("cart", {
 
     clearCart(): void {
       this.items = []
+      this.showCart = false
       this.saveToLocalStorage()
+    },
+
+    toggleCart(): void {
+      this.showCart = !this.showCart
     },
 
     saveToLocalStorage(): void {
       if (process.client) {
         try {
-          localStorage.setItem("cart", JSON.stringify(this.items))
+          localStorage.setItem("cart", JSON.stringify({ items: this.items, showCart: this.showCart }))
         } catch (error) {
           console.error("Failed to save cart to localStorage:", error)
         }
@@ -79,13 +86,15 @@ export const useCartStore = defineStore("cart", {
           const saved = localStorage.getItem("cart")
           if (saved) {
             const parsed = JSON.parse(saved)
-            if (Array.isArray(parsed)) {
-              this.items = parsed
+            if (Array.isArray(parsed.items)) {
+              this.items = parsed.items
+              this.showCart = parsed.showCart || false
             }
           }
         } catch (error) {
           console.error("Failed to load cart from localStorage:", error)
           this.items = []
+          this.showCart = false
         }
       }
     },

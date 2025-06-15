@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Hero Section -->
     <section class="bg-black text-white">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center min-h-[500px] md:min-h-[600px]">
@@ -37,7 +36,7 @@
               <img
                 :src="getResponsiveImage(heroProduct.image, 'desktop')"
                 :alt="heroProduct.name"
-                class="max-w-full h-auto"
+                class="max-w-full h-auto rounded-lg"
                 loading="eager"
               >
             </picture>
@@ -46,12 +45,11 @@
       </div>
     </section>
 
-    <!-- Categories Section -->
     <section class="py-12 md:py-16 lg:py-20">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div class="bg-gray-100 rounded-lg p-6 text-center group hover:shadow-lg transition-shadow">
-            <picture>
+            <picture v-if="headphonesCategoryImage.desktop">
               <source
                 media="(max-width: 480px)"
                 :srcset="getResponsiveImage(headphonesCategoryImage, 'mobile')"
@@ -83,7 +81,7 @@
           </div>
 
           <div class="bg-gray-100 rounded-lg p-6 text-center group hover:shadow-lg transition-shadow">
-            <picture>
+            <picture v-if="speakersCategoryImage.desktop">
               <source
                 media="(max-width: 480px)"
                 :srcset="getResponsiveImage(speakersCategoryImage, 'mobile')"
@@ -115,7 +113,7 @@
           </div>
 
           <div class="bg-gray-100 rounded-lg p-6 text-center group hover:shadow-lg transition-shadow">
-            <picture>
+            <picture v-if="earphonesCategoryImage.desktop">
               <source
                 media="(max-width: 480px)"
                 :srcset="getResponsiveImage(earphonesCategoryImage, 'mobile')"
@@ -149,13 +147,12 @@
       </div>
     </section>
 
-    <!-- Featured Products -->
     <section class="py-12 md:py-16 lg:py-20 bg-gray-50">
       <div class="container mx-auto px-4">
-        <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Featured Products</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">All Products</h2>
 
         <div v-if="loading" class="text-center">
-          <LoadingSpinner />
+          <LoadingSpinner class="mx-auto" />
         </div>
 
         <div v-else-if="error" class="text-center text-red-500">
@@ -164,7 +161,7 @@
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <ProductCard
-            v-for="product in featuredProducts"
+            v-for="product in allProducts"
             :key="product.id"
             :product="product"
           />
@@ -172,7 +169,6 @@
       </div>
     </section>
 
-    <!-- About Section -->
     <section class="py-12 md:py-16 lg:py-20">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -189,7 +185,7 @@
             </p>
           </div>
           <div class="order-1 lg:order-2">
-            <picture>
+            <picture v-if="headphonesCategoryImage.desktop">
               <source
                 media="(max-width: 480px)"
                 :srcset="getResponsiveImage(headphonesCategoryImage, 'mobile')"
@@ -226,22 +222,23 @@ const { getResponsiveImage } = useResponsiveImage()
 
 const loading = ref(true)
 const error = ref(null)
-const featuredProducts = ref([])
-const heroProduct = ref(null)
-const products = ref([])
+const allProducts = ref([])
+const heroProduct = computed(() => {
+  return allProducts.value.find(product => product.slug === 'xx99-mark-two-headphones') || null
+})
 
 const headphonesCategoryImage = computed(() => {
-  const headphone = products.value.find(p => p.category === 'headphones')
+  const headphone = allProducts.value.find(p => p.category === 'headphones')
   return headphone ? headphone.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
 const speakersCategoryImage = computed(() => {
-  const speaker = products.value.find(p => p.category === 'speakers')
+  const speaker = allProducts.value.find(p => p.category === 'speakers')
   return speaker ? speaker.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
 const earphonesCategoryImage = computed(() => {
-  const earphone = products.value.find(p => p.category === 'earphones')
+  const earphone = allProducts.value.find(p => p.category === 'earphones')
   return earphone ? earphone.categoryImage : { mobile: '', tablet: '', desktop: '' }
 })
 
@@ -252,13 +249,7 @@ onMounted(async () => {
       throw new Error('Failed to fetch products')
     }
     const data = await response.json()
-    products.value = data
-
-    // Get hero product (XX99 Mark II)
-    heroProduct.value = data.find(product => product.slug === 'xx99-mark-two-headphones')
-
-    // Get featured products (new products)
-    featuredProducts.value = data.filter(product => product.new).slice(0, 3)
+    allProducts.value = data
   } catch (err) {
     error.value = 'Failed to load products'
     console.error('Error loading products:', err)
