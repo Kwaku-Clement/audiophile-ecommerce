@@ -10,6 +10,7 @@
 
     <div v-else-if="product">
 
+      <!-- Product Details -->
       <section class="py-8 md:py-12">
         <div class="container mx-auto px-4">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -68,6 +69,7 @@
         </div>
       </section>
 
+      <!-- Features -->
       <section class="py-12 md:py-20">
         <div class="container mx-auto px-4">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
@@ -96,6 +98,7 @@
         </div>
       </section>
 
+      <!-- Gallery -->
       <section class="py-12 md:py-20">
         <div class="container mx-auto px-4">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -125,6 +128,7 @@
         </div>
       </section>
 
+      <!-- You May Also Like -->
       <section class="py-12 md:py-20 bg-gray-50">
         <div class="container mx-auto px-4">
           <h2 class="text-xl md:text-2xl font-bold text-center mb-8 md:mb-12">You may also like</h2>
@@ -166,6 +170,7 @@
         </div>
       </section>
 
+      <!-- Categories Section -->
       <section class="py-20 bg-gray-50">
         <div class="container mx-auto px-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -287,7 +292,6 @@ const quantity = ref(1)
 
 const { data: products, pending: loading, error } = await useLazyFetch('/products.json', {
   key: 'products',
-  baseURL: '/audiophile-ecommerce/',
   transform: (data) => data,
   server: true
 })
